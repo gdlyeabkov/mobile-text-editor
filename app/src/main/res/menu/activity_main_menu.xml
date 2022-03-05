@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+>
+<!--
+    <item
+        android:id="@+id/activity_main_menu_burger_btn"
+        android:title=""
+        android:icon="@drawable/burger"
+        app:showAsAction="always"
+    />
+    -->
+    <item
+        android:id="@+id/activity_main_menu_folder_btn"
+        app:showAsAction="always"
+        android:title=""
+        android:icon="@drawable/folder"
+    >
+        <menu>
+            <item
+                android:id="@+id/activity_main_menu_folder_btn_menu_create_btn"
+                android:title="Создать"
+                />
+            <item
+                android:id="@+id/activity_main_menu_folder_btn_menu_open_btn"
+                android:title="Открыть"
+            />
+            <item
+                android:id="@+id/activity_main_menu_folder_btn_menu_save_btn"
+                android:title="Сохранить"
+            />
+            <item
+                android:id="@+id/activity_main_menu_folder_btn_menu_saveas_btn"
+                android:title="Сохранить как"
+            />
+            <item
+                android:id="@+id/activity_main_menu_folder_btn_menu_reboot_btn"
+                android:title="Перезапустить"
+            />
+            <item
+                android:id="@+id/activity_main_menu_folder_btn_menu_close_btn"
+                android:title="Перезапустить"
+            />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/activity_main_menu_pen_btn"
+        app:showAsAction="always"
+        android:title=""
+        android:icon="@drawable/pen"
+    >
+        <menu>
+            <item
+                android:id="@+id/activity_main_menu_pen_btn_menu_undo_btn"
+                android:title="Отменить"
+                />
+            <item
+                android:id="@+id/activity_main_menu_pen_btn_menu_redo_btn"
+                android:title="Повторить"
+                />
+            <item
+                android:id="@+id/activity_main_menu_pen_btn_menu_select_all_btn"
+                android:title="Выделить все"
+                />
+            <item
+                android:id="@+id/activity_main_menu_pen_btn_menu_insert_btn"
+                android:title="Вставить"
+                />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/activity_main_menu_more_btn"
+        app:showAsAction="always"
+        android:title=""
+        android:icon="@drawable/more"
+    >
+        <menu>
+            <item
+                android:id="@+id/activity_main_menu_more_btn_menu_find_btn"
+                android:title="Найти"
+                />
+            <item
+                android:id="@+id/activity_main_menu_more_btn_menu_send_btn"
+                android:title="Отправить"
+                />
+            <item
+                android:id="@+id/activity_main_menu_more_btn_menu_goto_stroke_btn"
+                android:title="Перейти к строке"
+                />
+            <item
+                android:id="@+id/activity_main_menu_pen_btn_menu_print_btn"
+                android:title="Печать"
+                />
+        </menu>
+    </item>
+</menu>
