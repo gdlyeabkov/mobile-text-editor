@@ -7,11 +7,12 @@
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_find_dialog.xml" value="0.25416666666666665" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_go_to_stroke_dialog.xml" value="0.4" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_help.xml" value="0.25416666666666665" />
-        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_main.xml" value="0.176" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_main.xml" value="0.136" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_main_action_bar.xml" value="0.264" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_memory_manager.xml" value="0.4" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_open_file.xml" value="0.16" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_recent_files.xml" value="0.25416666666666665" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_save_as_file.xml" value="0.1" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_save_dialog.xml" value="0.264" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings.xml" value="0.25416666666666665" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_statistics_dialog.xml" value="0.22037037037037038" />

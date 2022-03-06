@@ -49,6 +49,11 @@
             android:exported="true">
         </activity>
 
+        <activity
+            android:name=".SaveAsFileActivity"
+            android:exported="true">
+        </activity>
+
     </application>
 
 </manifest>
