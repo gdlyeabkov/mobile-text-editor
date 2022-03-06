@@ -1,6 +1,7 @@
 package softtrack.apps.texteditor;
 
 import android.content.ClipData;
+import android.content.Intent;
 import android.icu.number.Scale;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.TimeZone;
@@ -24,13 +25,17 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 public class MemoryManagerActivity extends AppCompatActivity {
 
     public LinearLayout activityMemoryManagerContainerBody;
     public Menu myMenu;
+    public LinearLayout activityMemoryManagerContainerBodyInternalStorage;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -42,104 +47,79 @@ public class MemoryManagerActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInfalter = getMenuInflater();
-        menuInfalter.inflate(R.menu.activity_memory_manager_menu, menu);
-        myMenu = menu;
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int itemId = item.getItemId();
-        return super.onOptionsItemSelected(item);
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void initialize() {
-        activityMemoryManagerContainerBody = findViewById(R.id.activity_memory_manager_container_body);
+        findViews();
         initializeActionBar();
-        showFiles();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void showFiles() {
-        String currentPath = getApplicationContext().getCacheDir().getPath();
-        try {
-            File[] listOfFiles = new FileTask().execute(currentPath).get();
-            for(File fileInDir : listOfFiles){
-                Log.d("debug", "manager: " + fileInDir.getPath());
-                LinearLayout file = new LinearLayout(MemoryManagerActivity.this);
-                file.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
-                ImageView fileImg = new ImageView(MemoryManagerActivity.this);
-                fileImg.setImageResource(R.drawable.folder);
-                fileImg.setLayoutParams(new LinearLayout.LayoutParams(50, 50));
-                fileImg.setScaleType(ImageView.ScaleType.FIT_XY);
-                LinearLayout fileInfo = new LinearLayout(MemoryManagerActivity.this);
-                fileInfo.setOrientation(LinearLayout.VERTICAL);
-                LinearLayout.LayoutParams fileInfoLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 100);
-                fileInfoLayoutParams.setMargins(35, 0, 0, 0);
-                fileInfo.setLayoutParams(fileInfoLayoutParams);
-                TextView fileName = new TextView(MemoryManagerActivity.this);
-                String rawFileName = fileInDir.getName();
-                fileName.setText(rawFileName);
-                TextView fileMetaData = new TextView(MemoryManagerActivity.this);
-                long countOfMeasure = 0l;
-                String measure = "MB";
-                if (fileInDir.length() >= 8796093022208l) {
-                    countOfMeasure = fileInDir.length() / 8796093022208l;
-                    measure = "GB";
-                } else if (fileInDir.length() >= 8589934592l) {
-                    countOfMeasure = fileInDir.length() / 8589934592l;
-                    measure = "MB";
-                } else if (fileInDir.length() >= 8388608l) {
-                    countOfMeasure = fileInDir.length() / 8388608l;
-                    measure = "KB";
-                } else if (fileInDir.getTotalSpace() >= 8192l) {
-                    countOfMeasure = fileInDir.length() / 8192l;
-                    measure = "B";
-                }
-                String rawFileSize = countOfMeasure + " " + measure;
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // the format of your date
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-//                    sdf = new SimpleDateFormat("dd MM YYYY г. HH:mm z");
-                    sdf = new SimpleDateFormat("dd MM yyyy г. HH:mm");
-                }
-//                sdf.setTimeZone(TimeZone.getTimeZone("GMT-4"));
-                String formattedDate = sdf.format(new Date(fileInDir.lastModified() * 1000L));
-                String rawFileMetaData = rawFileSize + " " + formattedDate;
-                fileMetaData.setText(rawFileMetaData);
-                fileInfo.addView(fileName);
-                fileInfo.addView(fileMetaData);
-                file.addView(fileImg);
-                file.addView(fileInfo);
-                activityMemoryManagerContainerBody.addView(file);
-            }
-        } catch (InterruptedException e) {
-            Log.d("debug", "ошибка в FileTask");
-        } catch (ExecutionException e) {
-            Log.d("debug", "ошибка в FileTask");
-        }
+        addHandlers();
+        showDevices();
     }
 
     public void initializeActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true);
-        LinearLayout customView = new LinearLayout(MemoryManagerActivity.this);
-        customView.setOrientation(LinearLayout.VERTICAL);
-        customView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 50));
-        TextView customViewLabel = new TextView(MemoryManagerActivity.this);
-        customViewLabel.setText("Открыть файл");
-        TextView customViewPath = new TextView(MemoryManagerActivity.this);
-        customViewPath.setText("/storage");
-        LinearLayout.LayoutParams customViewPathLayoutParams = new LinearLayout.LayoutParams(50, 50);
-        customViewPathLayoutParams.setMargins(25, 0, 0 , 0);
-        customViewPath.setLayoutParams(customViewPathLayoutParams);
-        customView.addView(customViewLabel);
-        customView.addView(customViewPath);
+        TextView customView = new TextView(MemoryManagerActivity.this);
+        customView.setText("Диспетчер памяти");
         actionBar.setCustomView(customView);
+    }
+
+    public static HashSet<String> getExternalMounts() {
+        final HashSet<String> out = new HashSet<String>();
+        String reg = "(?i).*vold.*(vfat|ntfs|exfat|fat32|ext3|ext4).*rw.*";
+        String s = "";
+        try {
+            final Process process = new ProcessBuilder().command("mount")
+                    .redirectErrorStream(true).start();
+            process.waitFor();
+            final InputStream is = process.getInputStream();
+            final byte[] buffer = new byte[1024];
+            while (is.read(buffer) != -1) {
+                s = s + new String(buffer);
+            }
+            is.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+        // parse output
+        final String[] lines = s.split("\n");
+        for (String line : lines) {
+            if (!line.toLowerCase(Locale.US).contains("asec")) {
+                if (line.matches(reg)) {
+                    String[] parts = line.split(" ");
+                    for (String part : parts) {
+                        if (part.startsWith("/"))
+                            if (!part.toLowerCase(Locale.US).contains("vold"))
+                                out.add(part);
+                    }
+                }
+            }
+        }
+        return out;
+    }
+
+    public void showDevices() {
+        HashSet<String> devices = getExternalMounts();
+        for (String device: devices) {
+            TextView mountedDevice = new TextView(MemoryManagerActivity.this);
+            mountedDevice.setText("Подключенное устройство");
+            activityMemoryManagerContainerBody.addView(mountedDevice);
+        }
+    }
+
+    public void addHandlers() {
+        activityMemoryManagerContainerBodyInternalStorage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MemoryManagerActivity.this, OpenFileActivity.class);
+                MemoryManagerActivity.this.startActivity(intent);
+            }
+        });
+    }
+
+    public void findViews() {
+        activityMemoryManagerContainerBody = findViewById(R.id.activity_memory_manager_container_body);
+        activityMemoryManagerContainerBodyInternalStorage = findViewById(R.id.activity_memory_manager_container_body_internal_storage_aside);
     }
 
 }

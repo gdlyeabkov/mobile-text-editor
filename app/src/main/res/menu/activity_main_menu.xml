@@ -40,7 +40,7 @@
             />
             <item
                 android:id="@+id/activity_main_menu_folder_btn_menu_close_btn"
-                android:title="Перезапустить"
+                android:title="Закрыть"
             />
         </menu>
     </item>
@@ -89,7 +89,11 @@
                 android:title="Перейти к строке"
                 />
             <item
-                android:id="@+id/activity_main_menu_pen_btn_menu_print_btn"
+                android:id="@+id/activity_main_menu_more_btn_menu_statistics_btn"
+                android:title="Статистика"
+                />
+            <item
+                android:id="@+id/activity_main_menu_more_btn_menu_print_btn"
                 android:title="Печать"
                 />
         </menu>

@@ -202,6 +202,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/activity_main_container_aside_content_internal_storage"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:orientation="horizontal">
@@ -301,7 +302,7 @@
                         android:id="@+id/imageView3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/cloud" />
+                        app:srcCompat="@drawable/house" />
                 </LinearLayout>
 
                 <TextView

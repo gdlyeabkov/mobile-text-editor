@@ -44,6 +44,11 @@
             android:exported="true">
         </activity>
 
+        <activity
+            android:name=".OpenFileActivity"
+            android:exported="true">
+        </activity>
+
     </application>
 
 </manifest>

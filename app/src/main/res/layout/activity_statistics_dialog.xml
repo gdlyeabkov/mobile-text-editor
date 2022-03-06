@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_statistics_dialog_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <TextView
+        android:id="@+id/activity_statistics_dialog_container_count_words_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Количество слов" />
+
+    <TextView
+        android:id="@+id/activity_statistics_dialog_container_count_words_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/activity_statistics_dialog_container_count_chars_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Количество символов" />
+
+    <TextView
+        android:id="@+id/activity_statistics_dialog_container_count_chars_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+</LinearLayout>

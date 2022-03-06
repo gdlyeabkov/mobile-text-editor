@@ -32,16 +32,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="fitEnd"
-                app:srcCompat="@drawable/cloud" />
+                app:srcCompat="@drawable/house" />
         </LinearLayout>
     </LinearLayout>
 
     <ScrollView
         android:id="@+id/activity_save_dialog_body_scroll"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="450dp"
-        android:visibility="gone"
+        android:layout_height="400dp"
+        android:layout_marginBottom="50dp"
+        android:visibility="visible"
         tools:ignore="SpeakableTextPresentCheck">
 
         <LinearLayout
@@ -55,7 +55,7 @@
         android:id="@+id/activity_save_dialog_footer"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="-50dp"
         android:orientation="horizontal">
 
         <TextView
