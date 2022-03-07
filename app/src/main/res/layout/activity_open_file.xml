@@ -7,16 +7,56 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/activity_open_file_container_create_file_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:hideMotionSpec="@anim/activity_save_as_file_hide_anim"
+        app:layout_constraintBottom_toTopOf="@+id/activity_open_file_container_create_folder_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        app:layout_constraintVertical_bias="0.98"
+        app:showMotionSpec="@anim/activity_save_as_file_show_anim"
+        app:srcCompat="@drawable/document"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/activity_open_file_container_create_folder_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:hideMotionSpec="@anim/activity_save_as_file_hide_anim"
+        app:layout_constraintBottom_toTopOf="@+id/activity_open_file_container_add_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.98"
+        app:showMotionSpec="@anim/activity_save_as_file_show_anim"
+        app:srcCompat="@drawable/folder"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/activity_open_file_container_add_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="50dp"
         android:clickable="true"
+        android:visibility="visible"
+        app:extendMotionSpec="@anim/fade_in_colorpickerview_skydoves"
+        app:hideMotionSpec="@anim/activity_save_as_file_hide_anim"
+        app:icon="@android:drawable/ic_input_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.9"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.9"
+        app:showMotionSpec="@anim/activity_save_as_file_show_anim"
+        app:shrinkMotionSpec="@anim/fade_out_colorpickerview_skydoves"
         app:srcCompat="@android:drawable/ic_input_add"
         tools:ignore="SpeakableTextPresentCheck" />
 

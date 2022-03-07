@@ -8,7 +8,18 @@
         android:id="@+id/activity_open_file_menu_list_btn"
         android:title=""
         android:icon="@drawable/list"
-        />
+        >
+        <menu>
+            <item
+                android:id="@+id/activity_open_file_menu_list_btn_menu_name_btn"
+                android:title="Имя"
+                />
+            <item
+                android:id="@+id/activity_open_file_menu_list_btn_menu_date_btn"
+                android:title="Дата изменения"
+                />
+        </menu>
+    </item>
     <item
         app:showAsAction="always"
         android:id="@+id/activity_open_file_menu_star_btn"

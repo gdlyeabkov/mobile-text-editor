@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_style_dialog_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/activity_style_dialog_container_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioGroup
+            android:id="@+id/activity_style_dialog_container_body_group"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_default"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Стандартная" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_github"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="GitHub" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_gitHub_v2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="GitHub v2" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_tommorow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tommorow" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_hemisu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hemisu" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_atelier_cave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atelier Cave" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_atelier_dune"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atelier Dune" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_atelier_estuary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atelier Estuary" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_atelier_forest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atelier Forest" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_atelier_heath"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atelier Heath" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_atelier_lakeside"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atelier Lakeside" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_atelier_pateau"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atelier Plateau" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_atelier_savanna"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atelier Savanna" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_atelier_seaside"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atelier Seaside" />
+
+            <RadioButton
+                android:id="@+id/activity_style_dialog_container_body_group_atelier_sulphurpool"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Atelier Sulphurpool" />
+        </RadioGroup>
+    </LinearLayout>
+</ScrollView>

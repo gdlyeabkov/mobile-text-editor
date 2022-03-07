@@ -109,12 +109,32 @@
                 android:title="Перейти к строке"
                 />
             <item
+                android:id="@+id/activity_main_menu_more_btn_menu_encoding_btn"
+                android:title="Кодировка"
+                />
+            <item
+                android:id="@+id/activity_main_menu_more_btn_menu_style_btn"
+                android:title="Стиль оформления"
+                />
+            <item
                 android:id="@+id/activity_main_menu_more_btn_menu_statistics_btn"
                 android:title="Статистика"
                 />
             <item
                 android:id="@+id/activity_main_menu_more_btn_menu_print_btn"
                 android:title="Печать"
+                />
+            <item
+                android:id="@+id/activity_main_menu_more_btn_menu_tool_bar_btn"
+                android:title="Мини-панель инструментов"
+                android:checkable="true"
+                android:checked="true"
+                />
+            <item
+                android:id="@+id/activity_main_menu_more_btn_menu_readonly_btn"
+                android:title="Только чтение"
+                android:checkable="true"
+                android:checked="true"
                 />
         </menu>
     </item>

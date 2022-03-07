@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
+import android.icu.text.Collator;
 import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,11 +33,23 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class OpenFileActivity extends AppCompatActivity {
 
@@ -46,6 +59,11 @@ public class OpenFileActivity extends AppCompatActivity {
     public String currentPath = "";
     public ArrayList<HashMap<String, Object>> bookmarks;
     public boolean isDetectedBookmark = false;
+    public boolean isSortByName = true;
+    public boolean isActivityOpenFileContainerAddBtnHidden = false;
+    public ExtendedFloatingActionButton activityOpenFileContainerAddBtn;
+    public FloatingActionButton activityOpenFileContainerCreateFolderBtn;
+    public FloatingActionButton activityOpenFileContainerCreateFileBtn;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -66,17 +84,27 @@ public class OpenFileActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
+        boolean isListNameBtn = itemId == R.id.activity_open_file_menu_list_btn_menu_name_btn;
+        boolean isListDateBtn = itemId == R.id.activity_open_file_menu_list_btn_menu_date_btn;
         boolean isBookmarkBtn = itemId == R.id.activity_open_file_menu_star_btn;
-        if (isBookmarkBtn) {
+        boolean isFilterBtn = itemId == R.id.activity_open_file_menu_star_btn;
+        if (isListNameBtn) {
+            isSortByName = true;
+            showFiles();
+        } else if (isListDateBtn) {
+            isSortByName = false;
+            showFiles();
+        } else if (isBookmarkBtn) {
             if (!isDetectedBookmark) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(OpenFileActivity.this);
                 LayoutInflater inflater = getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.activity_add_bookmark_dialog, null);
                 builder.setView(dialogView);
-                builder.setCancelable(true);
+                builder.setCancelable(false);
                 EditText activityAddBookmarkDialogContainerNameField = dialogView.findViewById(R.id.activity_add_bookmark_dialog_container_name_field);
                 TextView activityAddBookmarkDialogContainerPathField = dialogView.findViewById(R.id.activity_add_bookmark_dialog_container_path_field);
                 builder.setPositiveButton("ОК", new DialogInterface.OnClickListener() {
@@ -129,15 +157,30 @@ public class OpenFileActivity extends AppCompatActivity {
     public void initialize() {
         findViews();
         initializeActionBar();
+        addHandlers();
         showFiles();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void showFiles() {
         currentPath = getApplicationContext().getCacheDir().getPath();
+        // File openedFile = new File(currentPath + "/music.mp3");
         try {
             File[] listOfFiles = new FileTask().execute(currentPath).get();
-            for (File fileInDir : listOfFiles){
+            List<File> listOfSortedFiles = Arrays.asList(listOfFiles);
+            Collections.sort(listOfSortedFiles);
+            List<File> sortedList;
+            if (isSortByName) {
+                sortedList = listOfSortedFiles.stream()
+                    .sorted(Comparator.comparing(File::getName))
+                    .collect(Collectors.toList());
+            } else {
+                sortedList = listOfSortedFiles.stream()
+                    .sorted(Comparator.comparing(File::lastModified))
+                    .collect(Collectors.toList());
+            }
+            activityOpenFileContainerScrollBody.removeAllViews();
+            for (File fileInDir : sortedList){
                 Log.d("debug", "manager: " + fileInDir.getPath());
                 LinearLayout file = new LinearLayout(OpenFileActivity.this);
                 file.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100));
@@ -221,6 +264,9 @@ public class OpenFileActivity extends AppCompatActivity {
 
     public void findViews() {
         activityOpenFileContainerScrollBody = findViewById(R.id.activity_open_file_container_scroll_body);
+        activityOpenFileContainerCreateFileBtn = findViewById(R.id.activity_open_file_container_create_file_btn);
+        activityOpenFileContainerCreateFolderBtn = findViewById(R.id.activity_open_file_container_create_folder_btn);
+        activityOpenFileContainerAddBtn = findViewById(R.id.activity_open_file_container_add_btn);
     }
 
     @SuppressLint("WrongConstant")
@@ -254,6 +300,94 @@ public class OpenFileActivity extends AppCompatActivity {
                 isDetectedBookmark = true;
             }
         }
+    }
+
+    public void addHandlers() {
+        activityOpenFileContainerAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isActivityOpenFileContainerAddBtnHidden) {
+                    activityOpenFileContainerCreateFolderBtn.show();
+                    activityOpenFileContainerCreateFileBtn.show();
+                } else {
+                    activityOpenFileContainerCreateFolderBtn.hide();
+                    activityOpenFileContainerCreateFileBtn.hide();
+                }
+                isActivityOpenFileContainerAddBtnHidden = !isActivityOpenFileContainerAddBtnHidden;
+            }
+        });
+        activityOpenFileContainerCreateFolderBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(OpenFileActivity.this);
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.activity_create_folder_dialog, null);
+                builder.setView(dialogView);
+                builder.setCancelable(false);
+                EditText activityCreateFolderDialogContainerInput = dialogView.findViewById(R.id.activity_create_folder_dialog_container_input);
+                builder.setPositiveButton("ОК", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        CharSequence  rawActivityCreateFolderDialogContainerInputContent = activityCreateFolderDialogContainerInput.getText();
+                        String activityCreateFolderDialogContainerInputContent = rawActivityCreateFolderDialogContainerInputContent.toString();
+                        String filePath = currentPath + "/" + activityCreateFolderDialogContainerInputContent;
+                        File newFile = new File(filePath);
+                        try {
+                            PrintWriter writer = new PrintWriter(filePath, "UTF-8");
+                        } catch (FileNotFoundException e) {
+                            Log.d("debug", "ошибка при создании файла");
+                        } catch (UnsupportedEncodingException e) {
+                            Log.d("debug", "ошибка при создании файла");
+                        }
+                    }
+                });
+                builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.setTitle("Создать папку");
+                alert.show();
+            }
+        });
+        activityOpenFileContainerCreateFileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(OpenFileActivity.this);
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.activity_create_file_dialog, null);
+                builder.setView(dialogView);
+                builder.setCancelable(false);
+                EditText activityCreateFileDialogContainerInput = dialogView.findViewById(R.id.activity_create_file_dialog_container_input);
+                builder.setPositiveButton("ОК", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        CharSequence  rawActivityCreateFileDialogContainerInputContent = activityCreateFileDialogContainerInput.getText();
+                        String activityCreateFileDialogContainerInputContent = rawActivityCreateFileDialogContainerInputContent.toString();
+                        String filePath = currentPath + "/" + activityCreateFileDialogContainerInputContent;
+                        File newFile = new File(filePath);
+                        try {
+                            PrintWriter writer = new PrintWriter(filePath, "UTF-8");
+                        } catch (FileNotFoundException e) {
+                            Log.d("debug", "ошибка при создании файла");
+                        } catch (UnsupportedEncodingException e) {
+                            Log.d("debug", "ошибка при создании файла");
+                        }
+                    }
+                });
+                builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.setTitle("Создать файл");
+                alert.show();
+            }
+        });
     }
 
 }

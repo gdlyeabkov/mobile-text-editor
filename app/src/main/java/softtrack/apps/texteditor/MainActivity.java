@@ -36,6 +36,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +60,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -109,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
     public HashMap<Integer, String> monthLabels;
     public LinearLayout activityMainContainerAsideContentRecentFiles;
     public LinearLayout activityMainContainerAsideContentBookmarks;
+    public LinearLayout activityMainContainerFooter;
+//    public LinearLayout activityMainContainerBody;
+    public LinearLayout activityMainContainerBodyLayout;
     @SuppressLint("WrongConstant") public SQLiteDatabase db;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -136,6 +141,8 @@ public class MainActivity extends AppCompatActivity {
         boolean isFolderMenuItemCreateBtn = itemId == R.id.activity_main_menu_folder_btn_menu_create_btn;
         boolean isFolderMenuItemOpenBtn = itemId == R.id.activity_main_menu_folder_btn_menu_open_btn;
         boolean isFolderMenuItemOpenSAFBtn = itemId == R.id.activity_main_menu_folder_btn_menu_open_saf_btn;
+        boolean isFolderMenuItemSaveBtn = itemId == R.id.activity_main_menu_folder_btn_menu_save_btn;
+        boolean isFolderMenuItemSaveAsBtn = itemId == R.id.activity_main_menu_folder_btn_menu_saveas_btn;
         boolean isPenMenuItemUndoBtn = itemId == R.id.activity_main_menu_pen_btn_menu_insert_btn;
         boolean isPenMenuItemRedoBtn = itemId == R.id.activity_main_menu_pen_btn_menu_insert_btn;
         boolean isPenMenuItemSelectAllBtn = itemId == R.id.activity_main_menu_pen_btn_menu_select_all_btn;
@@ -147,8 +154,12 @@ public class MainActivity extends AppCompatActivity {
         boolean isMoreMenuItemFindBtn = itemId == R.id.activity_main_menu_more_btn_menu_find_btn;
         boolean isMoreMenuItemSendBtn = itemId == R.id.activity_main_menu_more_btn_menu_send_btn;
         boolean isMoreMenuItemGoToStrokeBtn = itemId == R.id.activity_main_menu_more_btn_menu_goto_stroke_btn;
+        boolean isMoreMenuItemEncodingBtn = itemId == R.id.activity_main_menu_more_btn_menu_encoding_btn;
+        boolean isMoreMenuItemStyleBtn = itemId == R.id.activity_main_menu_more_btn_menu_style_btn;
         boolean isMoreMenuItemStatisticsBtn = itemId == R.id.activity_main_menu_more_btn_menu_statistics_btn;
         boolean isMoreMenuItemPrintBtn = itemId == R.id.activity_main_menu_more_btn_menu_print_btn;
+        boolean isMoreMenuItemToolBarBtn = itemId == R.id.activity_main_menu_more_btn_menu_tool_bar_btn;
+        boolean isMoreMenuItemReadOnlyBtn = itemId == R.id.activity_main_menu_more_btn_menu_readonly_btn;
         if (isFolderMenuItemCreateBtn) {
             fileNameLabel.setText("Безымянный.txt");
             HashMap<String, Object> document = new HashMap<String, Object>();
@@ -173,6 +184,14 @@ public class MainActivity extends AppCompatActivity {
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("text/plain");
             startActivity(intent);
+        } else if (isFolderMenuItemSaveBtn) {
+            openSaveDialogIfNeed();
+        } else if (isFolderMenuItemSaveAsBtn) {
+            CharSequence rawActivityMainContainerBodyLayoutInputContent = activityMainContainerBodyLayoutInput.getText();
+            String activityMainContainerBodyLayoutInputContent = rawActivityMainContainerBodyLayoutInputContent.toString();
+            Intent intent = new Intent(MainActivity.this, SaveAsFileActivity.class);
+            intent.putExtra("savedContent", activityMainContainerBodyLayoutInputContent);
+            MainActivity.this.startActivity(intent);
         } else if (isPenMenuItemUndoBtn) {
 
         } else if (isPenMenuItemRedoBtn) {
@@ -395,7 +414,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (isMoreMenuItemFindBtn) {
             openFindDialog();
         } else if (isMoreMenuItemSendBtn) {
-
+            openShareDialog();
         } else if (isMoreMenuItemGoToStrokeBtn) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             LayoutInflater inflater = getLayoutInflater();
@@ -421,6 +440,147 @@ public class MainActivity extends AppCompatActivity {
             int lastLineNumber = activityMainContainerBodyLayoutInput.getLineCount();
             String rawLastLineNumber = String.valueOf(lastLineNumber);
             activityGoToStrokeDialogContainerLabel.setText("Введите номер строки (1 .. " + lastLineNumber + ")");
+        } else if (isMoreMenuItemEncodingBtn) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.activity_encoding_dialog, null);
+            builder.setView(dialogView);
+            builder.setCancelable(true);
+            builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    RadioGroup activityEncodingDialogContainerBodyGroup = dialogView.findViewById(R.id.activity_encoding_dialog_container_body_group);
+                    int activityEncodingDialogContainerBodyGroupSelectedItemId = activityEncodingDialogContainerBodyGroup.getCheckedRadioButtonId();
+                    RadioButton activityEncodingDialogContainerBodyGroupSelectedItem = dialogView.findViewById(activityEncodingDialogContainerBodyGroupSelectedItemId);
+                    CharSequence rawActivityStyleDialogContainerBodyGroupSelectedItemContent = activityEncodingDialogContainerBodyGroupSelectedItem.getText();
+                    String activityStyleDialogContainerBodyGroupSelectedItemContent = rawActivityStyleDialogContainerBodyGroupSelectedItemContent.toString();
+                    boolean isUtf8Encoding = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("UTF-8");
+                    boolean isUtf16Encoding = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("UTF-16");
+                    boolean isUtf16BeEncoding = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("UTF-16BE");
+                    CharSequence rawActivityMainContainerBodyLayoutInputContent = activityMainContainerBodyLayoutInput.getText();
+                    String activityMainContainerBodyLayoutInputContent = rawActivityMainContainerBodyLayoutInputContent.toString();
+                    byte[] bytes = activityMainContainerBodyLayoutInputContent.getBytes(StandardCharsets.UTF_8);
+                    String encodedString = "";
+                    if (isUtf8Encoding) {
+                        encodedString = new String(bytes, StandardCharsets.UTF_8);
+                    } else if (isUtf16Encoding) {
+                        encodedString = new String(bytes, StandardCharsets.UTF_16);
+                    } else if (isUtf16BeEncoding) {
+                        encodedString = new String(bytes, StandardCharsets.UTF_16BE);
+                    }
+                    activityMainContainerBodyLayoutInput.setText(encodedString);
+                }
+            });
+            builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.setTitle("Кодировка");
+            alert.show();
+        } else if (isMoreMenuItemStyleBtn) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.activity_style_dialog, null);
+            builder.setView(dialogView);
+            builder.setCancelable(true);
+            builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    RadioGroup activityStyleDialogContainerBodyGroup = dialogView.findViewById(R.id.activity_style_dialog_container_body_group);
+                    int activityStyleDialogContainerBodyGroupSelectedItemId = activityStyleDialogContainerBodyGroup.getCheckedRadioButtonId();
+                    RadioButton activityStyleDialogContainerBodyGroupSelectedItem = dialogView.findViewById(activityStyleDialogContainerBodyGroupSelectedItemId);
+                    CharSequence rawActivityStyleDialogContainerBodyGroupSelectedItemContent = activityStyleDialogContainerBodyGroupSelectedItem.getText();
+                    String activityStyleDialogContainerBodyGroupSelectedItemContent = rawActivityStyleDialogContainerBodyGroupSelectedItemContent.toString();
+                    boolean isDefaultStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Default");
+                    boolean isGitHubStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("GitHub");
+                    boolean isGitHubV2Style = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("GitHub v2");
+                    boolean isTommorowStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Tommorow");
+                    boolean isHemisuStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Hemisu");
+                    boolean isAtelierCaveStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Atelier Cave");
+                    boolean isAtelierDuneStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Atelier Dune");
+                    boolean isAtelierEstuaryStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Atelier Estuary");
+                    boolean isAtelierForestStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Atelier Forest");
+                    boolean isAtelierHeathStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Atelier Heath");
+                    boolean isAtelierLakesideStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Atelier Lakeside");
+                    boolean isAtelierPlateauStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Atelier Plateau");
+                    boolean isAtelierSavannaStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Atelier Savanna");
+                    boolean isAtelierSeasideStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Atelier Seaside");
+                    boolean isAtelierSulphurpoolStyle = activityStyleDialogContainerBodyGroupSelectedItemContent.equalsIgnoreCase("Atelier Sulphurpool");
+                    if (isDefaultStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(255, 255, 255));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(255, 255, 255));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(0, 0, 0));
+                    } else if (isGitHubStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(250, 250, 250));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(250, 250, 250));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(5, 5, 5));
+                    } else if (isGitHubV2Style) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(245, 245, 245));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(245, 245, 245));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(10, 10, 10));
+                    } else if (isTommorowStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(240, 240, 240));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(240, 240, 240));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(15, 15, 15));
+                    } else if (isHemisuStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(235, 235, 235));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(235, 235, 235));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(20, 20, 20));
+                    } else if (isAtelierCaveStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(230, 230, 230));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(230, 230, 230));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(25, 25, 25));
+                    } else if (isAtelierDuneStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(225, 225, 225));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(225, 225, 225));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(30, 30, 30));
+                    } else if (isAtelierEstuaryStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(220, 220, 220));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(220, 220, 220));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(35, 35, 35));
+                    } else if (isAtelierForestStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(215, 215, 215));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(215, 215, 215));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(40, 40, 40));
+                    } else if (isAtelierHeathStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(210, 210, 210));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(210, 210, 210));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(45, 45, 45));
+                    } else if (isAtelierLakesideStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(205, 205, 205));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(205, 205, 205));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(50, 50, 50));
+                    } else if (isAtelierPlateauStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(200, 200, 200));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(200, 200, 200));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(55, 55, 55));
+                    } else if (isAtelierSavannaStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(195, 195, 195));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(195, 195, 195));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(60, 60, 60));
+                    } else if (isAtelierSeasideStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(190, 190, 190));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(190, 190, 190));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(65, 65, 65));
+                    } else if (isAtelierSulphurpoolStyle) {
+                        activityMainContainerBodyLayout.setBackgroundColor(Color.rgb(185, 185, 185));
+                        activityMainContainerBodyLayoutInput.setBackgroundColor(Color.rgb(185, 185, 185));
+                        activityMainContainerBodyLayoutInput.setTextColor(Color.rgb(60, 60, 60));
+                    }
+                }
+            });
+            builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.setTitle("Стиль оформления");
+            alert.show();
         } else if (isMoreMenuItemStatisticsBtn) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             LayoutInflater inflater = getLayoutInflater();
@@ -447,6 +607,27 @@ public class MainActivity extends AppCompatActivity {
             TextView activityStatisticsDialogContainerCountCharsValue = dialogView.findViewById(R.id.activity_statistics_dialog_container_count_chars_value);
             activityStatisticsDialogContainerCountWordsValue.setText(rawCountWords);
             activityStatisticsDialogContainerCountCharsValue.setText(rawCountChars);
+        } else if (isMoreMenuItemPrintBtn) {
+
+        } else if (isMoreMenuItemToolBarBtn) {
+            int activityMainContainerFootervisibility = activityMainContainerFooter.getVisibility();
+            boolean isActivityMainContainerFootervisibile = activityMainContainerFootervisibility == visible;
+            if (isActivityMainContainerFootervisibile) {
+                activityMainContainerFooter.setVisibility(unvisible);
+                myMenu.findItem(R.id.activity_main_menu_more_btn_menu_tool_bar_btn).setChecked(false);
+            } else {
+                activityMainContainerFooter.setVisibility(visible);
+                myMenu.findItem(R.id.activity_main_menu_more_btn_menu_tool_bar_btn).setChecked(true);
+            }
+        } else if (isMoreMenuItemReadOnlyBtn) {
+            boolean isNotReadOnly = activityMainContainerBodyLayoutInput.isEnabled();
+            if (isNotReadOnly) {
+                activityMainContainerBodyLayoutInput.setEnabled(false);
+                myMenu.findItem(R.id.activity_main_menu_more_btn_menu_readonly_btn).setChecked(false);
+            } else {
+                activityMainContainerBodyLayoutInput.setEnabled(true);
+                myMenu.findItem(R.id.activity_main_menu_more_btn_menu_readonly_btn).setChecked(true);
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -496,6 +677,9 @@ public class MainActivity extends AppCompatActivity {
         activityMainContainerHeaderBodyTabs = findViewById(R.id.activity_main_container_aside_container_header_body_tabs);
         activityMainContainerAsideContentRecentFiles = findViewById(R.id.activity_main_container_aside_content_recent_files);
         activityMainContainerAsideContentBookmarks = findViewById(R.id.activity_main_container_aside_content_bookmarks);
+        activityMainContainerFooter = findViewById(R.id.activity_main_container_footer);
+//        activityMainContainerBody = findViewById(R.id.activity_main_container_body);
+        activityMainContainerBodyLayout = findViewById(R.id.activity_main_container_body_layout);
 
         documents = new ArrayList<HashMap<String, Object>>();
 
@@ -640,8 +824,7 @@ public class MainActivity extends AppCompatActivity {
         activityMainContainerAsideContentShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent share = new Intent(Intent.ACTION_SEND);
-                startActivity(Intent.createChooser(share, "Share Image"));
+                openShareDialog();
             }
         });
         activityMainContainerAsideContentHideAds.setOnClickListener(new View.OnClickListener() {
@@ -698,14 +881,7 @@ public class MainActivity extends AppCompatActivity {
         activityMainContainerFooterSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                int selectedPosition = activityMainContainerHeaderBodyTabs.getSelectedTabPosition();
-                HashMap<String, Object> document = documents.get(selectedPosition);
-                boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesDetected")));
-
-                if (isLocalChangesDetected) {
-                    openSaveDialog();
-                }
+                openSaveDialogIfNeed();
             }
         });
         activityMainContainerAsideContentInternalStorage.setOnClickListener(new View.OnClickListener() {
@@ -826,13 +1002,6 @@ public class MainActivity extends AppCompatActivity {
                 int findIndex = activityMainContainerBodyLayoutInputContent.indexOf(activityFindDialogContainerFindFieldContent);
                 boolean isFound = findIndex != - 1;
                 if (isFound) {
-                    /*String a = activityMainContainerBodyLayoutInputContent.substring(findIndex, activityMainContainerBodyLayoutInputContent.length() - 1);
-                    int endFindIndex = a.indexOf(" ");
-                    if (endFindIndex != - 1) {
-                        activityMainContainerBodyLayoutInput.setSelection(findIndex, findIndex + endFindIndex);
-                    } else {
-                        activityMainContainerBodyLayoutInput.setSelection(findIndex, findIndex + 1);
-                    }*/
                     activityMainContainerBodyLayoutInput.setSelection(findIndex, findIndex + activityFindDialogContainerFindFieldContent.length());
                 } else {
                     String toastMessage = "Ничего не найдено";
@@ -844,19 +1013,31 @@ public class MainActivity extends AppCompatActivity {
         builder.setNeutralButton("Заменить Все", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                EditText activityFindDialogContainerFindField = dialogView.findViewById(R.id.activity_find_dialog_container_find_field);
+                CharSequence  rawActivityFindDialogContainerFindFieldContent = activityFindDialogContainerFindField.getText();
+                String activityFindDialogContainerFindFieldContent = rawActivityFindDialogContainerFindFieldContent.toString();
+                EditText activityFindDialogContainerReplaceField = dialogView.findViewById(R.id.activity_find_dialog_container_replace_field);
+                CharSequence  rawActivityFindDialogContainerReplaceFieldContent = activityFindDialogContainerReplaceField.getText();
+                String activityFindDialogContainerReplaceFieldContent = rawActivityFindDialogContainerReplaceFieldContent.toString();
+                CharSequence rawActivityMainContainerBodyLayoutInputContent = activityMainContainerBodyLayoutInput.getText();
+                String activityMainContainerBodyLayoutInputContent = rawActivityMainContainerBodyLayoutInputContent.toString();
+                String replacedContent = activityMainContainerBodyLayoutInputContent.replaceAll(activityFindDialogContainerFindFieldContent, activityFindDialogContainerReplaceFieldContent);
+                activityMainContainerBodyLayoutInput.setText(replacedContent);
             }
         });
         builder.setNegativeButton("Заменить", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                /*ScrollView weightSelectorActivityRealPartScroll = dialogView.findViewById(R.id.weight_selector_activity_real_part_scroll);
-                ScrollView weightSelectorActivityImaginaryPartScroll = dialogView.findViewById(R.id.weight_selector_activity_imaginary_part_scroll);
-                int destinationBetweenScrollItems = 105;
-                int realScrollY = Integer.valueOf(settedGrowth) * destinationBetweenScrollItems;
-                int imaginaryScrollY = Integer.valueOf(settedWeight) * destinationBetweenScrollItems;
-                weightSelectorActivityRealPartScroll.scrollTo(0, realScrollY);
-                weightSelectorActivityImaginaryPartScroll.scrollTo(0, imaginaryScrollY);*/
+                EditText activityFindDialogContainerFindField = dialogView.findViewById(R.id.activity_find_dialog_container_find_field);
+                CharSequence  rawActivityFindDialogContainerFindFieldContent = activityFindDialogContainerFindField.getText();
+                String activityFindDialogContainerFindFieldContent = rawActivityFindDialogContainerFindFieldContent.toString();
+                EditText activityFindDialogContainerReplaceField = dialogView.findViewById(R.id.activity_find_dialog_container_replace_field);
+                CharSequence  rawActivityFindDialogContainerReplaceFieldContent = activityFindDialogContainerReplaceField.getText();
+                String activityFindDialogContainerReplaceFieldContent = rawActivityFindDialogContainerReplaceFieldContent.toString();
+                CharSequence rawActivityMainContainerBodyLayoutInputContent = activityMainContainerBodyLayoutInput.getText();
+                String activityMainContainerBodyLayoutInputContent = rawActivityMainContainerBodyLayoutInputContent.toString();
+                String replacedContent = activityMainContainerBodyLayoutInputContent.replaceFirst(activityFindDialogContainerFindFieldContent, activityFindDialogContainerReplaceFieldContent);
+                activityMainContainerBodyLayoutInput.setText(replacedContent);
             }
         });
         AlertDialog alert = builder.create();
@@ -1316,6 +1497,20 @@ public class MainActivity extends AppCompatActivity {
     public void initDB() {
         db = openOrCreateDatabase("text-editor-database.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
         db.execSQL("CREATE TABLE IF NOT EXISTS bookmarks (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, path TEXT);");
+    }
+
+    public void openShareDialog() {
+        Intent share = new Intent(Intent.ACTION_SEND);
+        startActivity(Intent.createChooser(share, "Share Image"));
+    }
+
+    public void openSaveDialogIfNeed() {
+        int selectedPosition = activityMainContainerHeaderBodyTabs.getSelectedTabPosition();
+        HashMap<String, Object> document = documents.get(selectedPosition);
+        boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesDetected")));
+        if (isLocalChangesDetected) {
+            openSaveDialog();
+        }
     }
 
 }
