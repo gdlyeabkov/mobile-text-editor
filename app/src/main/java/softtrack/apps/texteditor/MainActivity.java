@@ -6,12 +6,14 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
@@ -33,6 +35,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +43,11 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
+import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.ColorPickerDialog;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -54,9 +62,11 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -94,8 +104,12 @@ public class MainActivity extends AppCompatActivity {
     public LinearLayout activityMainContainerBodyContainerAside;
     public HorizontalScrollView activityMainContainerHeader;
     public TabLayout activityMainContainerHeaderBodyTabs;
-//    public ArrayList<String> documents;
     public ArrayList<HashMap<String, Object>> documents;
+    public String timeStamp = "";
+    public HashMap<Integer, String> monthLabels;
+    public LinearLayout activityMainContainerAsideContentRecentFiles;
+    public LinearLayout activityMainContainerAsideContentBookmarks;
+    @SuppressLint("WrongConstant") public SQLiteDatabase db;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -136,19 +150,19 @@ public class MainActivity extends AppCompatActivity {
         boolean isMoreMenuItemStatisticsBtn = itemId == R.id.activity_main_menu_more_btn_menu_statistics_btn;
         boolean isMoreMenuItemPrintBtn = itemId == R.id.activity_main_menu_more_btn_menu_print_btn;
         if (isFolderMenuItemCreateBtn) {
-            activityMainContainerBodyLayoutInput.setText("");
-            fileNameLabel.setText("Безымянный");
-//            documents.add("Безымянный");
+            fileNameLabel.setText("Безымянный.txt");
             HashMap<String, Object> document = new HashMap<String, Object>();
-            document.put("name", "Безымянный");
+            document.put("name", "Безымянный.txt");
             document.put("text", "");
             document.put("isChangesDetected", false);
             documents.add(document);
             TabLayout.Tab newDocument = activityMainContainerHeaderBodyTabs.newTab();
-            newDocument.setText("Безымянный");
+            newDocument.setText("Безымянный.txt");
             activityMainContainerHeaderBodyTabs.addTab(newDocument);
             activityMainContainerHeaderBodyTabs.selectTab(newDocument);
-            if (documents.size() >= 2) {
+            int countDocuments = documents.size();
+            boolean isMoreDocuments = countDocuments >= 2;
+            if (isMoreDocuments) {
                 activityMainContainerHeader.setVisibility(visible);
             }
         } else if (isFolderMenuItemOpenBtn) {
@@ -187,10 +201,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         } else if (isPenMenuItemInsertColorBtn) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            /*LayoutInflater inflater = getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.activity_go_to_stroke_dialog, null);
-            builder.setView(dialogView);*/
+            /*AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setCancelable(true);
             builder.setPositiveButton("ОК", new DialogInterface.OnClickListener() {
                 @Override
@@ -205,17 +216,53 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             AlertDialog alert = builder.create();
-            alert.show();
+            alert.show();*/
+
+            new ColorPickerDialog.Builder(this)
+                    .setPreferenceName("MyColorPickerDialog")
+                    .setPositiveButton("ОК",
+                        new ColorEnvelopeListener() {
+                            @Override
+                            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                                String hexCode = envelope.getHexCode();
+                                CharSequence rawActivityMainContainerBodyLayoutInputContent = activityMainContainerBodyLayoutInput.getText();
+                                String activityMainContainerBodyLayoutInputContent = rawActivityMainContainerBodyLayoutInputContent.toString();
+                                String beforeInsertText = activityMainContainerBodyLayoutInputContent.substring(0, lastCursorPosition);
+                                int activityMainContainerBodyLayoutInputContentLength = activityMainContainerBodyLayoutInputContent.length();
+                                int activityMainContainerBodyLayoutInputContentLastIndex = activityMainContainerBodyLayoutInputContentLength - 1;
+//                                String afterInsertText = activityMainContainerBodyLayoutInputContent.substring(lastCursorPosition, activityMainContainerBodyLayoutInputContentLastIndex);
+//                                String updatedContent = beforeInsertText + hexCode + afterInsertText;
+//                                activityMainContainerBodyLayoutInput.setText(updatedContent);
+                                String updatedContent = activityMainContainerBodyLayoutInputContent + hexCode;
+                                activityMainContainerBodyLayoutInput.setText(updatedContent);
+
+                            }
+                        })
+                    .setNegativeButton("Отмена",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            })
+                    .attachAlphaSlideBar(true) // the default value is true.
+                    .attachBrightnessSlideBar(true)  // the default value is true.
+                    .setBottomSpace(12) // set a bottom space between the last slidebar and buttons.
+                    .show();
+
         } else if (isPenMenuItemInsertTimeStampBtn) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            /*LayoutInflater inflater = getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.activity_go_to_stroke_dialog, null);
-            builder.setView(dialogView);*/
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.activity_insert_time_stamp, null);
+            builder.setView(dialogView);
             builder.setCancelable(true);
             builder.setPositiveButton("ОК", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-
+                    CharSequence rawActivityMainContainerBodyLayoutInputContent = activityMainContainerBodyLayoutInput.getText();
+                    String activityMainContainerBodyLayoutInputContent = rawActivityMainContainerBodyLayoutInputContent.toString();
+                    String updatedContent = activityMainContainerBodyLayoutInputContent + timeStamp;
+                    activityMainContainerBodyLayoutInput.setText(updatedContent);
                 }
             });
             builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
@@ -226,6 +273,112 @@ public class MainActivity extends AppCompatActivity {
             });
             AlertDialog alert = builder.create();
             alert.setTitle("Вставить временную метку");
+            alert.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialogInterface) {
+                    Calendar calendar = Calendar.getInstance();
+                    boolean isAddPrefix = false;
+                    int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+                    String rawDayOfMonth = String.valueOf(dayOfMonth);
+                    int rawDayOfMonthLength = rawDayOfMonth.length();
+                    isAddPrefix = rawDayOfMonthLength == 1;
+                    if (isAddPrefix) {
+                        rawDayOfMonth = "0" + rawDayOfMonth;
+                    }
+                    int month = calendar.get(Calendar.MONTH);
+                    String rawMonth = String.valueOf(month);
+                    int rawMonthLength = rawMonth.length();
+                    isAddPrefix = rawMonthLength == 1;
+                    if (isAddPrefix) {
+                        rawMonth = "0" + rawMonth;
+                    }
+                    int year = calendar.get(Calendar.YEAR);
+                    String rawYear = String.valueOf(year);
+                    int hours = calendar.get(Calendar.HOUR_OF_DAY);
+                    String rawHours = String.valueOf(hours);
+                    int rawHoursLength = rawHours.length();
+                    isAddPrefix = rawHoursLength == 1;
+                    if (isAddPrefix) {
+                        rawHours = "0" + rawHours;
+                    }
+                    int minutes = calendar.get(Calendar.MINUTE);
+                    String rawMinutes = String.valueOf(minutes);
+                    int rawMinutesLength = rawMinutes.length();
+                    isAddPrefix = rawMinutesLength == 1;
+                    if (isAddPrefix) {
+                        rawMinutes = "0" + rawMinutes;
+                    }
+                    int seconds = calendar.get(Calendar.SECOND);
+                    String rawSeconds = String.valueOf(seconds);
+                    int rawSecondsLength = rawSeconds.length();
+                    isAddPrefix = rawSecondsLength == 1;
+                    if (isAddPrefix) {
+                        rawSeconds = "0" + rawSeconds;
+                    }
+                    int amPm = calendar.get(Calendar.AM_PM);
+                    String amPmLabel = "";
+                    boolean isAm = amPm == Calendar.AM;
+                    if (isAm) {
+                        amPmLabel = "AM";
+                    } else {
+                        amPmLabel = "PM";
+                    }
+                    TimeZone tz = TimeZone.getTimeZone("Europe/Moscow");
+                    int tzOffset = tz.getOffset(new Date().getTime()) / 1000 / 60;
+                    int tzOffsetHours = tzOffset / 60;
+                    String rawTzOffsetHours = String.valueOf(tzOffsetHours);
+                    int rawTzOffsetHoursLength = rawTzOffsetHours.length();
+                    isAddPrefix = rawTzOffsetHoursLength == 1;
+                    if (isAddPrefix) {
+                        rawTzOffsetHours = "0" + rawTzOffsetHours;
+                    }
+                    int tzOffsetMinutes = 60 / tzOffset % 60;
+                    String rawTzOffsetMinutes = String.valueOf(tzOffsetMinutes);
+                    int rawTzOffsetMinutesLength = rawTzOffsetMinutes.length();
+                    isAddPrefix = rawTzOffsetMinutesLength == 1;
+                    if (isAddPrefix) {
+                        rawTzOffsetMinutes = "0" + rawTzOffsetMinutes;
+                    }
+                    String rawTzOffset = rawTzOffsetHours + ":" + rawTzOffsetMinutes;
+                    Log.d("debug", "rawTzOffset: " + rawTzOffset);
+                    timeStamp = rawYear + "/" + rawMonth + "/" + rawDayOfMonth + " " + rawHours + ":" + rawMinutes;
+                    RadioButton activityTimeStampContainerBodyFirstLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_first_label);
+                    activityTimeStampContainerBodyFirstLabel.setText(timeStamp);
+                    timeStamp = rawYear + "/" + rawMonth + "/" + rawDayOfMonth + " " + rawHours + ":" + rawMinutes + " " + amPmLabel;
+                    RadioButton activityTimeStampContainerBodySecondLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_second_label);
+                    activityTimeStampContainerBodySecondLabel.setText(timeStamp);
+                    timeStamp = rawYear + "/" + rawMonth + "/" + rawDayOfMonth + " " + rawHours + ":" + rawMinutes + ":" + rawSeconds + " GMT" + rawTzOffset;
+                    RadioButton activityTimeStampContainerBodyThirdLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_third_label);
+                    activityTimeStampContainerBodyThirdLabel.setText(timeStamp);
+                    timeStamp = rawMonth + "/" + rawDayOfMonth + "/" + rawYear + " " + rawHours + ":" + rawMinutes;
+                    RadioButton activityTimeStampContainerBodyFourthLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_fourth_label);
+                    activityTimeStampContainerBodyFourthLabel.setText(timeStamp);
+                    timeStamp = rawMonth + "/" + rawDayOfMonth + "/" + rawYear + " " + rawHours + ":" + rawMinutes + " " + amPmLabel;
+                    RadioButton activityTimeStampContainerBodyFifthLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_fifth_label);
+                    activityTimeStampContainerBodyFifthLabel.setText(timeStamp);
+                    timeStamp = rawMonth + "/" + rawDayOfMonth + "/" + rawYear + " " + rawHours + ":" + rawMinutes + ":" + rawSeconds + " GMT" + rawTzOffset;
+                    RadioButton activityTimeStampContainerBodySixthLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_sixth_label);
+                    activityTimeStampContainerBodySixthLabel.setText(timeStamp);
+                    timeStamp = monthLabels.get(month) + " " + rawDayOfMonth + ", " + rawYear + " " + rawHours + ":" + rawMinutes;
+                    RadioButton activityTimeStampContainerBodySeventhLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_seventh_label);
+                    activityTimeStampContainerBodySeventhLabel.setText(timeStamp);
+                    timeStamp = monthLabels.get(month) + " " + rawDayOfMonth + ", " + rawYear + " " + rawHours + ":" + rawMinutes + " " + amPmLabel;
+                    RadioButton activityTimeStampContainerBodyEigthLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_eighth_label);
+                    activityTimeStampContainerBodyEigthLabel.setText(timeStamp);
+                    timeStamp = monthLabels.get(month) + " " + rawDayOfMonth + ", " + rawYear + " " + rawHours + ":" + rawMinutes + ":" + rawSeconds + " GMT" + rawTzOffset;
+                    RadioButton activityTimeStampContainerBodyNinethLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_nineth_label);
+                    activityTimeStampContainerBodyNinethLabel.setText(timeStamp);
+                    timeStamp = rawDayOfMonth + "/" + monthLabels.get(month) + "/" + rawYear + " " + rawHours + ":" + rawMinutes;
+                    RadioButton activityTimeStampContainerBodyTenthLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_tenth_label);
+                    activityTimeStampContainerBodyTenthLabel.setText(timeStamp);
+                    timeStamp = rawDayOfMonth + "/" + monthLabels.get(month) + "/" + rawYear + " " + rawHours + ":" + rawMinutes + " " + amPmLabel;
+                    RadioButton activityTimeStampContainerBodyEleventhLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_eleventh_label);
+                    activityTimeStampContainerBodyEleventhLabel.setText(timeStamp);
+                    timeStamp = rawDayOfMonth + "/" + monthLabels.get(month) + "/" + rawYear + " " + rawHours + ":" + rawMinutes + ":" + rawSeconds + " GMT" + rawTzOffset;
+                    RadioButton activityTimeStampContainerBodyTwelthLabel = dialogView.findViewById(R.id.activity_time_stamp_container_body_twelth_label);
+                    activityTimeStampContainerBodyTwelthLabel.setText(timeStamp);
+                }
+            });
             alert.show();
         } else if (isPenMenuItemIncreaseBtn) {
             CharSequence rawActivityMainContainerBodyLayoutInputContent = activityMainContainerBodyLayoutInput.getText();
@@ -300,6 +453,20 @@ public class MainActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void initialize() {
+        initDB();
+        monthLabels = new HashMap<Integer, String>();
+        monthLabels.put(1, "янв.");
+        monthLabels.put(2, "фев.");
+        monthLabels.put(3, "мар.");
+        monthLabels.put(4, "апр.");
+        monthLabels.put(5, "мая");
+        monthLabels.put(6, "июн.");
+        monthLabels.put(7, "июл.");
+        monthLabels.put(8, "авг.");
+        monthLabels.put(9, "сен.");
+        monthLabels.put(10, "окт.");
+        monthLabels.put(11, "ноя.");
+        monthLabels.put(12, "дек.");
         visible = View.VISIBLE;
         unvisible = View.GONE;
         disabledBtnColor = Color.rgb(200, 200, 200);
@@ -327,7 +494,9 @@ public class MainActivity extends AppCompatActivity {
         activityMainContainerBodyContainerAside = findViewById(R.id.activity_main_container_body_container_aside);
         activityMainContainerHeader = findViewById(R.id.activity_main_container_aside_container_header);
         activityMainContainerHeaderBodyTabs = findViewById(R.id.activity_main_container_aside_container_header_body_tabs);
-//        documents = new ArrayList<String>();
+        activityMainContainerAsideContentRecentFiles = findViewById(R.id.activity_main_container_aside_content_recent_files);
+        activityMainContainerAsideContentBookmarks = findViewById(R.id.activity_main_container_aside_content_bookmarks);
+
         documents = new ArrayList<HashMap<String, Object>>();
 
         ActionBar actionBar = getSupportActionBar();
@@ -336,7 +505,7 @@ public class MainActivity extends AppCompatActivity {
         customView.setOrientation(LinearLayout.HORIZONTAL);
         customView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 50));
         TextView customViewLabel = new TextView(MainActivity.this);
-        customViewLabel.setText("Безымянный");
+        customViewLabel.setText("Безымянный.txt");
         fileNameLabel = customViewLabel;
         ImageView customViewImg = new ImageView(MainActivity.this);
         customViewImg.setImageResource(R.drawable.burger);
@@ -362,7 +531,7 @@ public class MainActivity extends AppCompatActivity {
         clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
 //        String firstDocumentName = "Безымянный";
-        String firstDocumentName = "Безымянный";
+        String firstDocumentName = "Безымянный.txt";
         String firstDocumentText = "";
 
         Intent myIntent = getIntent();
@@ -418,25 +587,25 @@ public class MainActivity extends AppCompatActivity {
                 activityMainContainerFooterRedo.setColorFilter(disabledBtnColor);
                 activityMainContainerFooterRedo.setEnabled(false);
 
+                Log.d("debug", "undo and redo: " + String.valueOf(historyRecords.size()));
+                historyRecords.add(activityMainContainerBodyLayoutInputContent);
                 historyRecordsCursor++;
 
                 int selectedPosition = activityMainContainerHeaderBodyTabs.getSelectedTabPosition();
                 HashMap<String, Object> document = documents.get(selectedPosition);
-                boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesSelected")));
-
-//                if (!isChangesDetected) {
-                if (!isLocalChangesDetected) {
-                    isChangesDetected = true;
+                boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesDetected")));
+                boolean isNotLocalChanges = !isLocalChangesDetected;
+                int activityMainContainerBodyLayoutInputContentLength = activityMainContainerBodyLayoutInputContent.length();
+                boolean isActivityMainContainerBodyLayoutInputContentExists = activityMainContainerBodyLayoutInputContentLength >= 1;
+                boolean isSetLocalChanges = isNotLocalChanges && isActivityMainContainerBodyLayoutInputContentExists;
+                if (isSetLocalChanges) {
                     fileNameLabel.setText("* " + fileNameLabel.getText().toString());
                     activityMainContainerFooterSave.setColorFilter(enabledBtnColor);
                     activityMainContainerFooterSave.setEnabled(true);
-
                     document.put("isChangesDetected", true);
-
                 }
 
                 int countChars = rawActivityMainContainerBodyLayoutInputContent.length();
-//                int countLines = countChars / 34 + 1;
                 activityMainContainerBodyContainerAside.removeAllViews();
                 int countLines = activityMainContainerBodyLayoutInput.getLineCount();
                 for (int lineNumberIndex = 0; lineNumberIndex < countLines; lineNumberIndex++) {
@@ -465,11 +634,7 @@ public class MainActivity extends AppCompatActivity {
         activityMainContainerAsideContentExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(Build.VERSION.SDK_INT>=16 && Build.VERSION.SDK_INT<21){
-                    finishAffinity();
-                } else if(Build.VERSION.SDK_INT>=21){
-                    finishAndRemoveTask();
-                }
+                closeApp();
             }
         });
         activityMainContainerAsideContentShare.setOnClickListener(new View.OnClickListener() {
@@ -536,10 +701,9 @@ public class MainActivity extends AppCompatActivity {
 
                 int selectedPosition = activityMainContainerHeaderBodyTabs.getSelectedTabPosition();
                 HashMap<String, Object> document = documents.get(selectedPosition);
-                boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesSelected")));
+                boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesDetected")));
 
                 if (isLocalChangesDetected) {
-//                if (isChangesDetected) {
                     openSaveDialog();
                 }
             }
@@ -605,7 +769,18 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 int selectedPosition = activityMainContainerHeaderBodyTabs.getSelectedTabPosition();
                 HashMap<String, Object> document = documents.get(selectedPosition);
-                activityMainContainerBodyLayoutInput.setText(String.valueOf(document.get("text")));
+                String documentText = String.valueOf(document.get("text"));
+                activityMainContainerBodyLayoutInput.setText(documentText);
+                String documentName = String.valueOf(document.get("name"));
+                fileNameLabel.setText(documentName);
+                boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesDetected")));
+                if (isLocalChangesDetected) {
+                    activityMainContainerFooterSave.setColorFilter(enabledBtnColor);
+                    activityMainContainerFooterSave.setEnabled(true);
+                } else {
+                    activityMainContainerFooterSave.setColorFilter(disabledBtnColor);
+                    activityMainContainerFooterSave.setEnabled(false);
+                }
             }
 
             @Override
@@ -616,6 +791,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
 
+            }
+        });
+        activityMainContainerAsideContentRecentFiles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, RecentFilesActivity.class);
+                MainActivity.this.startActivity(intent);
+            }
+        });
+        activityMainContainerAsideContentBookmarks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, BookmarksActivity.class);
+                MainActivity.this.startActivity(intent);
             }
         });
     }
@@ -792,6 +981,13 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog alert = builder.create();
                     alert.show();
                     fileNameLabel.setText(activitySaveDialogFooterFileNameInputContent);
+
+                    int selectedPosition = activityMainContainerHeaderBodyTabs.getSelectedTabPosition();
+                    HashMap<String, Object> document = documents.get(selectedPosition);
+                    document.put("isChangesDetected", false);
+                    document.put("name", activitySaveDialogFooterFileNameInputContent);
+                    activityMainContainerHeaderBodyTabs.getTabAt(selectedPosition).setText(activitySaveDialogFooterFileNameInputContent);
+
                 } catch (IOException e) {
                     Log.d("debug", "ошибка создания файла");
                 }
@@ -820,9 +1016,10 @@ public class MainActivity extends AppCompatActivity {
 
         int selectedPosition = activityMainContainerHeaderBodyTabs.getSelectedTabPosition();
         HashMap<String, Object> document = documents.get(selectedPosition);
-        boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesSelected")));
+        boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesDetected")));
 
-//        if (isChangesDetected) {
+        String documentName = String.valueOf(document.get("name"));
+
         if (isLocalChangesDetected) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("Вы хотите сохранить изменения?");
@@ -831,7 +1028,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     activityMainContainerBodyLayoutInput.setText("");
-                    fileNameLabel.setText("Безымянный");
+                    fileNameLabel.setText("Безымянный.txt");
                     activityMainContainerFooterSave.setColorFilter(disabledBtnColor);
                     activityMainContainerFooterSave.setEnabled(false);
                     isChangesDetected = false;
@@ -843,7 +1040,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    openSaveDialogWithExit();
+                    openSaveDialogWithExit(documentName);
                 }
             });
             builder.setNeutralButton("Отмена", new DialogInterface.OnClickListener() {
@@ -857,7 +1054,7 @@ public class MainActivity extends AppCompatActivity {
             alert.show();
         } else {
             activityMainContainerBodyLayoutInput.setText("");
-            fileNameLabel.setText("Безымянный");
+            fileNameLabel.setText("Безымянный.txt");
             activityMainContainerFooterSave.setColorFilter(disabledBtnColor);
             activityMainContainerFooterSave.setEnabled(false);
             isChangesDetected = false;
@@ -941,17 +1138,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void openSaveDialogWithExit() {
+    public void openSaveDialogWithExit(String documentName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.activity_save_dialog, null);
         builder.setView(dialogView);
         builder.setCancelable(true);
+
+        EditText activitySaveDialogFooterFileNameInput = dialogView.findViewById(R.id.activity_save_dialog_footer_file_name_input);
+
+        int selectedPosition = activityMainContainerHeaderBodyTabs.getSelectedTabPosition();
+
+        activitySaveDialogFooterFileNameInput.setText(documentName);
+//        activitySaveDialogFooterFileNameInput.setText(String.valueOf(documents.get(selectedPosition).get("name")));
+
         builder.setPositiveButton("Сохранить", new DialogInterface.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                EditText activitySaveDialogFooterFileNameInput = dialogView.findViewById(R.id.activity_save_dialog_footer_file_name_input);
                 CharSequence rawActivitySaveDialogFooterFileNameInputContent = activitySaveDialogFooterFileNameInput.getText();
                 String activitySaveDialogFooterFileNameInputContent = rawActivitySaveDialogFooterFileNameInputContent.toString();
                 String currentPath = getApplicationContext().getCacheDir().getPath();
@@ -979,12 +1183,13 @@ public class MainActivity extends AppCompatActivity {
                     fileNameLabel.setText(activitySaveDialogFooterFileNameInputContent);
 
                     activityMainContainerBodyLayoutInput.setText("");
-                    fileNameLabel.setText("Безымянный");
+                    fileNameLabel.setText("Безымянный.txt");
                     activityMainContainerFooterSave.setColorFilter(disabledBtnColor);
                     activityMainContainerFooterSave.setEnabled(false);
                     isChangesDetected = false;
 
                     int selectedPosition = activityMainContainerHeaderBodyTabs.getSelectedTabPosition();
+
                     if (activityMainContainerHeaderBodyTabs.getTabCount() >= 2) {
                         activityMainContainerHeaderBodyTabs.removeTabAt(selectedPosition);
                         documents.remove(selectedPosition);
@@ -1023,6 +1228,94 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         alert.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        boolean isSomeChangesDetected = false;
+        for (HashMap<String, Object> document : documents) {
+            boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesDetected")));
+            if (isLocalChangesDetected) {
+                isSomeChangesDetected = true;
+                break;
+            }
+            Log.d("debug", "isLocalChangesDetected: " + String.valueOf(document.get("isChangesDetected")));
+        }
+        Log.d("debug", "documents: " + String.valueOf(documents.size()) + ", isSomeChangesDetected: " + Boolean.toString(isSomeChangesDetected));
+        if (isSomeChangesDetected) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.activity_exit_dialog, null);
+            builder.setView(dialogView);
+            builder.setCancelable(false);
+            builder.setPositiveButton("Сохранить", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    for (HashMap<String, Object> document : documents) {
+                        boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesDetected")));
+                        if (isLocalChangesDetected) {
+                            String name = String.valueOf(document.get("name"));
+                            openSaveDialogWithExit(name);
+                        }
+                    }
+                    // closeApp();
+                }
+            });
+            builder.setNegativeButton("Выход", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    MainActivity.super.onBackPressed();
+                }
+            });
+            builder.setNeutralButton("Позже", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    MainActivity.super.onBackPressed();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.setTitle("Выход");
+            alert.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialogInterface) {
+                    LinearLayout activityExitDialogContainerBody = dialogView.findViewById(R.id.activity_exit_dialog_container_body);
+                    for (HashMap<String, Object> document : documents) {
+                        boolean isLocalChangesDetected = Boolean.valueOf(String.valueOf(document.get("isChangesDetected")));
+                        if (isLocalChangesDetected) {
+                            LinearLayout activityExitDialogContainerBodyItem = new LinearLayout(MainActivity.this);
+                            ImageView activityExitDialogContainerBodyItemIcon = new ImageView(MainActivity.this);
+                            activityExitDialogContainerBodyItemIcon.setImageResource(R.drawable.document);
+                            LinearLayout.LayoutParams activityExitDialogContainerBodyItemIconLayoutParams = new LinearLayout.LayoutParams(50, 50);
+                            activityExitDialogContainerBodyItemIconLayoutParams.setMargins(25, 5, 25, 5);
+                            activityExitDialogContainerBodyItemIcon.setLayoutParams(activityExitDialogContainerBodyItemIconLayoutParams);
+                            TextView activityExitDialogContainerBodyItemName = new TextView(MainActivity.this);
+                            String name = String.valueOf(document.get("name"));
+                            activityExitDialogContainerBodyItemName.setText(name);
+                            activityExitDialogContainerBodyItem.addView(activityExitDialogContainerBodyItemIcon);
+                            activityExitDialogContainerBodyItem.addView(activityExitDialogContainerBodyItemName);
+                            activityExitDialogContainerBody.addView(activityExitDialogContainerBodyItem);
+                        }
+                    }
+                }
+            });
+            alert.show();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    public void closeApp() {
+        if(Build.VERSION.SDK_INT>=16 && Build.VERSION.SDK_INT<21){
+            finishAffinity();
+        } else if(Build.VERSION.SDK_INT>=21){
+            finishAndRemoveTask();
+        }
+    }
+
+    @SuppressLint("WrongConstant")
+    public void initDB() {
+        db = openOrCreateDatabase("text-editor-database.db", SQLiteDatabase.CREATE_IF_NECESSARY, null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS bookmarks (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, path TEXT);");
     }
 
 }

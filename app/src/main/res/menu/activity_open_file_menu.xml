@@ -5,19 +5,19 @@
     >
     <item
         app:showAsAction="always"
-        android:id="@+id/activity_memory_manager_menu_list_btn"
+        android:id="@+id/activity_open_file_menu_list_btn"
         android:title=""
         android:icon="@drawable/list"
         />
     <item
         app:showAsAction="always"
-        android:id="@+id/activity_memory_manager_menu_star_btn"
+        android:id="@+id/activity_open_file_menu_star_btn"
         android:title=""
         android:icon="@drawable/star"
         />
     <item
         app:showAsAction="always"
-        android:id="@+id/activity_memory_manager_menu_filter_btn"
+        android:id="@+id/activity_open_file_menu_filter_btn"
         android:title=""
         android:icon="@drawable/filter"
         />

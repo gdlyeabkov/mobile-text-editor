@@ -43,7 +43,7 @@
                     <com.google.android.material.tabs.TabItem
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Безымянный" />
+                        android:text="Безымянный.txt" />
 
                 </com.google.android.material.tabs.TabLayout>
             </LinearLayout>
@@ -282,6 +282,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/activity_main_container_aside_content_bookmarks"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:orientation="horizontal">
@@ -310,6 +311,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/activity_main_container_aside_content_recent_files"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:orientation="horizontal">
