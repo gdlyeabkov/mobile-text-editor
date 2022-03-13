@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_settings_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:ignore="SpeakableTextPresentCheck">
 
     <LinearLayout
+        android:id="@+id/activity_settings_container_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -21,6 +23,7 @@
             android:textStyle="bold" />
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_language"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -41,6 +44,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_encoding"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -81,6 +85,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_break_line"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -101,6 +106,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_paragraph_char"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -335,6 +341,7 @@
             android:textStyle="bold" />
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_notifications"
             android:layout_width="match_parent"
             android:layout_height="75dp"
             android:orientation="vertical">
@@ -465,6 +472,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_font_family"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -485,6 +493,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_font_size"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -505,6 +514,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_line_height"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -561,7 +571,7 @@
             </LinearLayout>
 
             <Switch
-                android:id="@+id/switch2"
+                android:id="@+id/activity_settings_container_body_auto_save_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -569,6 +579,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_auto_save_interval"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -599,12 +610,12 @@
             android:textStyle="bold" />
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_theme"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView40"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Тема"
@@ -619,6 +630,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_full_screen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
@@ -645,7 +657,7 @@
             </LinearLayout>
 
             <Switch
-                android:id="@+id/switch1"
+                android:id="@+id/activity_settings_container_body_full_screen_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -703,6 +715,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_watch_news"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -723,6 +736,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_feedback"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -743,6 +757,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/activity_settings_container_body_remove_ads"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">

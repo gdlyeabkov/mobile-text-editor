@@ -20,7 +20,19 @@
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_recent_files.xml" value="0.264" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_save_as_file.xml" value="0.4" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_save_dialog.xml" value="0.264" />
-        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings.xml" value="0.25416666666666665" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings.xml" value="0.2916666666666667" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_auto_save_interval_dialog.xml" value="0.264" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_break_line_dialog.xml" value="0.2578125" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_font_family.xml" value="0.103125" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_font_family_dialog.xml" value="0.264" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_font_size.xml" value="0.103125" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_font_size_dialog.xml" value="0.264" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_lang_dialog.xml" value="0.264" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_line_height.xml" value="0.103125" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_line_height_dialog.xml" value="0.264" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_notifications_dialog.xml" value="0.4" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_paragraph_char_dialog.xml" value="0.264" />
+        <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_settings_theme_dialog.xml" value="0.103125" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_statistics_dialog.xml" value="0.22037037037037038" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_style_dialog.xml" value="0.1" />
         <entry key="..\:/android_projects/TextEditor/app/src/main/res/layout/activity_system_manager.xml" value="0.25416666666666665" />
