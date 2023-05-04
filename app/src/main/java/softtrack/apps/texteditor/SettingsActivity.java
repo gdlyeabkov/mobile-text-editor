@@ -67,9 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
         activitySettingsContainerBodyNotifications = findViewById(R.id.activity_settings_container_body_notifications);
         activitySettingsContainerBodyFontFamily = findViewById(R.id.activity_settings_container_body_font_family);
         activitySettingsContainerBodyFontSize = findViewById(R.id.activity_settings_container_body_font_size);
-        // activitySettingsContainerBodyFontSizeSlider = findViewById(R.id.activity_settings_font_size_dialog_container_slider);
         activitySettingsContainerBodyLineHeight = findViewById(R.id.activity_settings_container_body_line_height);
-        // activitySettingsContainerBodyLineHeightSlider = findViewById(R.id.activity_settings_container_body_line_height_);
         activitySettingsContainerBodyAutoSaveSwitch = findViewById(R.id.activity_settings_container_body_auto_save_switch);
         activitySettingsContainerBodyAutoSaveInterval = findViewById(R.id.activity_settings_container_body_auto_save_interval);
         activitySettingsContainerBodyTheme = findViewById(R.id.activity_settings_container_body_theme);

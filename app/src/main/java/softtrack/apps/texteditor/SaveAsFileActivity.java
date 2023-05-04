@@ -115,9 +115,6 @@ public class SaveAsFileActivity extends AppCompatActivity {
                         CharSequence rawActivityAddBookmarkDialogContainerPathFieldContent = activityAddBookmarkDialogContainerPathField.getText();
                         String activityAddBookmarkDialogContainerPathFieldContent = rawActivityAddBookmarkDialogContainerPathFieldContent.toString();
                         db.execSQL("INSERT INTO \"bookmarks\"(name, path) VALUES (\"" + activityAddBookmarkDialogContainerNameFieldContent + "\", \"" + activityAddBookmarkDialogContainerPathFieldContent  + "\");");
-                        /*ColorDrawable a = new ColorDrawable();
-                        a.setColorFilter(Color.rgb(255, 0, 0), PorterDuff.Mode.SCREEN);
-                        myMenu.findItem(R.id.activity_open_file_menu_star_btn).setIcon(a);*/
                         myMenu.findItem(R.id.activity_open_file_menu_star_btn).setIcon(R.drawable.filled_star);
                         isDetectedBookmark = true;
                     }
@@ -143,9 +140,6 @@ public class SaveAsFileActivity extends AppCompatActivity {
                 String toastMessage = "Закладка удалена";
                 Toast toast = Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT);
                 toast.show();
-                /*ColorDrawable a = new ColorDrawable();
-                a.setColorFilter(Color.rgb(0, 0, 0), PorterDuff.Mode.SCREEN);
-                myMenu.findItem(R.id.activity_open_file_menu_star_btn).setIcon(a);*/
                 myMenu.findItem(R.id.activity_open_file_menu_star_btn).setIcon(R.drawable.star);
                 isDetectedBookmark = false;
             }
@@ -165,7 +159,6 @@ public class SaveAsFileActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void showFiles() {
         currentPath = getApplicationContext().getCacheDir().getPath();
-        // File openedFile = new File(currentPath + "/music.mp3");
         try {
             File[] listOfFiles = new FileTask().execute(currentPath).get();
             List<File> listOfSortedFiles = Arrays.asList(listOfFiles);

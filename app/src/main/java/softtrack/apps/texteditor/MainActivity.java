@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
     public LinearLayout activityMainContainerAsideContentRecentFiles;
     public LinearLayout activityMainContainerAsideContentBookmarks;
     public LinearLayout activityMainContainerFooter;
-//    public LinearLayout activityMainContainerBody;
     public LinearLayout activityMainContainerBodyLayout;
     @SuppressLint("WrongConstant") public SQLiteDatabase db;
 
@@ -137,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
-//        boolean isBurgerMenuItem = itemId == R.id.activity_main_menu_burger_btn;
         boolean isFolderMenuItemCreateBtn = itemId == R.id.activity_main_menu_folder_btn_menu_create_btn;
         boolean isFolderMenuItemOpenBtn = itemId == R.id.activity_main_menu_folder_btn_menu_open_btn;
         boolean isFolderMenuItemOpenSAFBtn = itemId == R.id.activity_main_menu_folder_btn_menu_open_saf_btn;
@@ -199,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
         } else if (isPenMenuItemSelectAllBtn) {
             activityMainContainerBodyLayoutInput.selectAll();
         } else if (isPenMenuItemInsertBtn) {
-            // код при клике на пункт меню
             if (clipboard.hasPrimaryClip()) {
                 ClipData clipData = clipboard.getPrimaryClip();
                 boolean isItemsExists = clipData.getItemCount() >= 1;
@@ -220,23 +217,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         } else if (isPenMenuItemInsertColorBtn) {
-            /*AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setCancelable(true);
-            builder.setPositiveButton("ОК", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                }
-            });
-            builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                }
-            });
-            AlertDialog alert = builder.create();
-            alert.show();*/
-
             new ColorPickerDialog.Builder(this)
                     .setPreferenceName("MyColorPickerDialog")
                     .setPositiveButton("ОК",
@@ -249,9 +229,6 @@ public class MainActivity extends AppCompatActivity {
                                 String beforeInsertText = activityMainContainerBodyLayoutInputContent.substring(0, lastCursorPosition);
                                 int activityMainContainerBodyLayoutInputContentLength = activityMainContainerBodyLayoutInputContent.length();
                                 int activityMainContainerBodyLayoutInputContentLastIndex = activityMainContainerBodyLayoutInputContentLength - 1;
-//                                String afterInsertText = activityMainContainerBodyLayoutInputContent.substring(lastCursorPosition, activityMainContainerBodyLayoutInputContentLastIndex);
-//                                String updatedContent = beforeInsertText + hexCode + afterInsertText;
-//                                activityMainContainerBodyLayoutInput.setText(updatedContent);
                                 String updatedContent = activityMainContainerBodyLayoutInputContent + hexCode;
                                 activityMainContainerBodyLayoutInput.setText(updatedContent);
 
@@ -678,7 +655,6 @@ public class MainActivity extends AppCompatActivity {
         activityMainContainerAsideContentRecentFiles = findViewById(R.id.activity_main_container_aside_content_recent_files);
         activityMainContainerAsideContentBookmarks = findViewById(R.id.activity_main_container_aside_content_bookmarks);
         activityMainContainerFooter = findViewById(R.id.activity_main_container_footer);
-//        activityMainContainerBody = findViewById(R.id.activity_main_container_body);
         activityMainContainerBodyLayout = findViewById(R.id.activity_main_container_body_layout);
 
         documents = new ArrayList<HashMap<String, Object>>();
@@ -714,7 +690,6 @@ public class MainActivity extends AppCompatActivity {
         actionBar.setCustomView(customView);
         clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-//        String firstDocumentName = "Безымянный";
         String firstDocumentName = "Безымянный.txt";
         String firstDocumentText = "";
 
@@ -740,7 +715,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-//        documents.add(firstDocumentName);
         HashMap<String, Object> firstDocument = new HashMap<String, Object>();
         firstDocument.put("name", firstDocumentName);
         firstDocument.put("text", firstDocumentText);
@@ -1331,7 +1305,6 @@ public class MainActivity extends AppCompatActivity {
         int selectedPosition = activityMainContainerHeaderBodyTabs.getSelectedTabPosition();
 
         activitySaveDialogFooterFileNameInput.setText(documentName);
-//        activitySaveDialogFooterFileNameInput.setText(String.valueOf(documents.get(selectedPosition).get("name")));
 
         builder.setPositiveButton("Сохранить", new DialogInterface.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -1439,7 +1412,6 @@ public class MainActivity extends AppCompatActivity {
                             openSaveDialogWithExit(name);
                         }
                     }
-                    // closeApp();
                 }
             });
             builder.setNegativeButton("Выход", new DialogInterface.OnClickListener() {
